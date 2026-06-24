@@ -1,1 +1,7 @@
 /.idea/
+.env
+__pycache__/
+*.pyc
+
+# Scratch execution sandbox for CodeCoR's result-checking phase
+codecor/src/codecor/workspace/

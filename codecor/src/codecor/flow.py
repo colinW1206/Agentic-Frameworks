@@ -2,6 +2,8 @@ import asyncio
 import os
 import re
 import ast
+import sys
+import subprocess
 from crewai.flow.flow import Flow, listen, start, router
 from .crew import CodecorCrew
 
@@ -14,7 +16,7 @@ class CodeCorFlow(Flow):
         if match:
             try:
                 return ast.literal_eval(match.group(0))
-            except:
+            except (ValueError, SyntaxError):
                 pass
         return []
 
@@ -95,13 +97,12 @@ class CodeCorFlow(Flow):
         snippets_to_test = self.state["surviving_code_snippets"]
         self.state["surviving_code_snippets"] = []
 
-        workspace_dir = os.path.join(os.getcwd(), "codecor", "src", "codecor", "workspace")
+        # Anchor the workspace to this package, not the caller's cwd, so test files never
+        # leak into the project root when run.py is launched from a different directory.
+        workspace_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "workspace")
         os.makedirs(workspace_dir, exist_ok=True)
 
         self.state["failed_code_snippets"] = []
-
-        import subprocess
-        import sys
 
         for idx, snippet in enumerate(snippets_to_test):
             combined_code = (
@@ -139,6 +140,10 @@ class CodeCorFlow(Flow):
                 feedback = "FAILED\nTimeout: The code took too long to execute (possible infinite loop)."
             except Exception as e:
                 feedback = f"FAILED\nExecution Error: {str(e)}"
+            finally:
+                # Don't let scratch test files accumulate in the source tree across runs.
+                if os.path.exists(host_file_path):
+                    os.remove(host_file_path)
 
             snippet["feedback"] = feedback
 

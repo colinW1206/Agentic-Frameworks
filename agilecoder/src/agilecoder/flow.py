@@ -1,5 +1,6 @@
 import os
 import re
+import sys
 import subprocess
 import tempfile
 from crewai.flow.flow import Flow, listen, start, router, or_
@@ -16,7 +17,7 @@ class AgileCoderFlow(Flow):
             temp_path = temp_file.name
 
         try:
-            result = subprocess.run(['python', temp_path], capture_output=True, text=True, timeout=5)
+            result = subprocess.run([sys.executable, temp_path], capture_output=True, text=True, timeout=5)
             if result.returncode == 0:
                 return "PASSED"
             else:
