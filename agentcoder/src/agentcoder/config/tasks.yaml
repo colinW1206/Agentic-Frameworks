@@ -1,0 +1,13 @@
+coding_task:
+  description: >
+    {programmer_instruction}
+  expected_output: >
+    Pure Python code containing only the implemented function and necessary imports.
+  agent: programmer
+
+test_generation_task:
+  description: >
+    {test_instruction}
+  expected_output: >
+    Pure Python code containing only the `unittest.TestCase` class and necessary imports.
+  agent: test_designer

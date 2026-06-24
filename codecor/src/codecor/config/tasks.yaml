@@ -1,0 +1,151 @@
+generate_cot_task:
+  description: >
+    Task Description: {requirement}
+    
+    Please write a detailed step-by-step chain of thought to solve this problem.
+    
+    Here is an example:
+    ### Problem:
+    Write a function called factorial that computes the factorial of a given non-negative integer n, where the factorial of a number 
+    is the product of all positive integers up to that number.
+
+    ### Chain of thought:
+    First, we recognize that the factorial of a number is the product of all positive integers from 1 to that number.
+    There are two common approaches to calculating the factorial: iteratively and recursively.
+    For this task, we'll go with the iterative approach as it's straightforward and 
+    avoids potential issues with recursion limits for larger numbers.
+    The iterative approach involves initializing a variable to 1 and then multiplying 
+    it with every integer from 1 to n.
+    We also need to handle the edge case where n is 0, since 0! (0 factorial) is defined as 1.
+    Finally, we'll test the function to ensure it works correctly.
+
+    Please write chain of thought for the problem.
+    Output ONLY the chain of thought.
+  expected_output: A step-by-step logic path.
+  agent: prompt_agent
+
+evaluate_cot_task:
+  description: >
+    Evaluate this CoT prompt: 
+    {cot_candidate}
+    
+    ### Clarity: Return 1 if there is no ambiguity, otherwise return 0.
+    ### Relevance: Return 1 if directly related to the task, otherwise return 0.
+    ### Conciseness: Return 1 if concise, otherwise return 0.
+    ### Context: Return 1 if provides enough contextual information, otherwise return 0.
+    ### Output should follow the example: [1,1,1,1]
+    
+    Please only provide the list.
+  expected_output: A list of four binary scores like [1, 1, 1, 1].
+  agent: prompt_evaluator
+
+generate_code_task:
+  description: >
+    Task Description: {requirement}
+    Chain of Thought: {selected_cot}
+    
+    Please write the pure Python code for the problem using the Chain of Thought to guide your implementation.
+    Output ONLY the raw Python code (no markdown, no explanations).
+  expected_output: Valid pure Python code solving the problem.
+  agent: code_agent
+
+evaluate_code_task:
+  description: >
+    Evaluate the following code snippet for syntax errors, missing imports, or unfinished logic:
+    {code_candidate}
+    
+    If it contains syntax errors that will prevent compilation, output [0].
+    If it appears syntactically sound and complete, output [1].
+    Output ONLY the array.
+  expected_output: A list with a single binary score, e.g., [1].
+  agent: code_evaluator
+
+generate_tests_task:
+  description: >
+    Task Description: {requirement}
+    Chain of Thought: {selected_cot}
+    
+    Here is an example.
+    ### Problem:
+    Write a function called factorial that computes the factorial of a given non-negative integer n, where the 
+    factorial of a number is the product of all positive integers up to that number.
+
+    ### Test Cases:
+    assert factorial(0)==1 # factorial(0) should return 1
+    assert factorial(1)==1 # factorial(1) should return 1
+    assert factorial(2)==2 # factorial(2) should return 2
+    assert factorial(5)==120 # factorial(5) should return 120
+    assert factorial(10)==3628800 # factorial(10) should return 3628800
+    
+    Please generate three tests for the problem outlined in the task description.
+    Please only provide the tests. Format them as a proper python unittest suite.
+  expected_output: Python unittest code testing the solution.
+  agent: test_agent
+
+evaluate_tests_task:
+  description: >
+    Evaluate this test suite: 
+    {test_candidate}
+    
+    ### Empty Input: Return 1 if the input is not empty, otherwise return 0.
+    ### Incomplete Format: Return 1 if matches expected format, otherwise return 0.
+    ### Invalid Test Cases: Return 1 if no obvious invalid values, otherwise return 0.
+    ### Output should follow the example: [1,1,1]
+    
+    Please only provide the list.
+  expected_output: A list of three binary scores like [1, 1, 1].
+  agent: test_evaluator
+
+execution_task:
+  description: >
+    Execute the Python test script located at the following path:
+    {file_path}
+    
+    Read the file and execute it using your Code Interpreter tool.
+    
+    CRITICAL OUTPUT INSTRUCTION - Format your Final Answer exactly like this:
+    If tests fail: FAILED [Include the full traceback error here]
+    If tests pass: PASSED [Explanation]
+  expected_output: PASSED or FAILED with execution output/traceback.
+  agent: executor
+
+generate_repair_advice_task:
+  description: >
+    Please write repair advice for the code:
+    {code}
+    
+    Here is the feedback of compiler:
+    {feedback}
+    
+    Please only provide the advice.
+  expected_output: Detailed repair advice.
+  agent: repair_agent
+
+evaluate_repair_task:
+  description: >
+    Evaluate this repair advice: 
+    {advice_candidate}
+    
+    ### Clarity: Return 1 if there is no ambiguity, otherwise return 0.
+    ### Relevance: Return 1 if related to test cases, otherwise return 0.
+    ### Conciseness: Return 1 if concise, otherwise return 0.
+    ### Context: Return 1 if provides enough contextual information, otherwise return 0.
+    ### Output should follow the example: [1,1,1,1]
+    
+    Please only provide the list.
+  expected_output: A list of four binary scores like [1, 1, 1, 1].
+  agent: repair_evaluator
+
+repair_code_task:
+  description: >
+    Original Requirement: {requirement}
+    Failed Code:
+    {code}
+    Execution Feedback:
+    {feedback}
+    Repair Advice:
+    {selected_advice}
+    
+    Rewrite the code to fix the bugs using the advice. Output ONLY the raw Python code.
+  expected_output: The fixed, raw Python code.
+  agent: code_agent

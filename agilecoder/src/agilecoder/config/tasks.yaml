@@ -1,0 +1,48 @@
+backlog_creation:
+  description: >
+    Task Description: {requirement}
+    
+    Create a prioritized list of tasks and detailed acceptance criteria.
+  expected_output: A structured product backlog in Markdown format.
+  agent: product_manager
+
+sprint_planning:
+  description: >
+    Review the product backlog provided by the PM. Identify any ambiguities or technical risks.
+    Select the tasks to be completed and define the Sprint Backlog.
+  expected_output: A refined sprint backlog approved for development.
+  agent: scrum_master
+
+implementation:
+  description: >
+    Task Description: {requirement}
+    
+    Implement the code for the tasks in the sprint backlog.
+    Focus on functional correctness and clean Python syntax. Add docstrings to your functions.
+    
+    CRITICAL OUTPUT CONSTRAINT:
+    You must output ONLY the standalone Python script containing the function.
+    Output ONLY the raw, runnable Python code. No markdown formatting or explanations.
+  expected_output: Valid pure Python code solving the problem.
+  agent: developer
+
+code_review:
+  description: >
+    Perform a strict static code review on the Developer's code based on the AgileCoder Three-Step Protocol:
+    1. Basic Implementation Checks: Check for empty methods, missing imports, or bad syntax.
+    2. Backlog Compliance: Assess if the code fulfills the tasks in the sprint backlog.
+    3. Criteria Satisfaction & Bug Identification: Ensure it meets acceptance criteria and is free of logic bugs.
+    
+    Provide a review report.
+  expected_output: A structured review report detailing bugs and logic errors found during the 3 steps.
+  agent: senior_developer
+
+verification:
+  description: >
+    Task Description: {requirement}
+    
+    1. Review the Developer's code and the Senior Developer's review.
+    2. Write a comprehensive set of unit tests (including edge cases) based on the original requirement.
+    3. Output ONLY the pure Python `unittest` code. Do not include the developer's code in your output, just the test cases.
+  expected_output: Pure Python code containing the unittest suite.
+  agent: tester
