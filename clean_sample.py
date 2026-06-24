@@ -1,4 +1,5 @@
 import json
+import os
 import re
 
 # Used to clean the code samples within the output files to make sure that EvalPlus can evaluate them
@@ -49,7 +50,12 @@ def sanitise_jsonl(input_file: str, output_file: str):
     print(f"Successfully cleaned {cleaned_count} samples. Saved to {output_file}")
 
 if __name__ == "__main__":
-    input_path = "outputs/agilecoder/samples.jsonl"
-    output_path = "outputs/agilecoder/samples.jsonl"
+    # Sanitise every framework's samples in place (README claims it processes the outputs/ dirs).
+    frameworks = ["baseline", "agentcoder", "agilecoder", "codecor"]
 
-    sanitise_jsonl(input_path, output_path)
+    for system_name in frameworks:
+        path = f"outputs/{system_name}/samples.jsonl"
+        if os.path.exists(path):
+            sanitise_jsonl(path, path)
+        else:
+            print(f"[*] Skipping {system_name}: no samples.jsonl found at '{path}'.")
